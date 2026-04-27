@@ -44,9 +44,10 @@ launcher/          → Script di avvio automatico (host/client)
 
 ### 1. Clona la repo
 git clone https://github.com/angelo978/PearDesk
-cd PearDesk
+
 ### 2. Installa le dipendenze
 Per ogni modulo:
+
 cd desktop-host
 npm install
 
