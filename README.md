@@ -78,7 +78,7 @@ git clone https://github.com/angelo978/PearDesk
 ### 2. Installa le dipendenze
 Per ogni modulo:
 
-cd desktop-host
+cd ../desktop-host
 npm install
 
 cd ../desktop-client
