@@ -100,9 +100,8 @@ contribuire, come:
 Il progetto è aperto a contributi della community.
 
 ---
-
 ## 📬 Contatti
 
-Per richieste commerciali o permessi speciali:  
-**Angelo – Autore del progetto**
+Per richieste commerciali o permessi speciali, utilizza la Issue dedicata:  
+👉 https://github.com/angelo978/PearDesk/issues/1
 
