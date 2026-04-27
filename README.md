@@ -35,7 +35,7 @@ Connessione diretta, crittografata, multipiattaforma e ultra‑leggera.
 
 ### 🔹 1. Pannello di controllo P2P
 Interfaccia locale che mostra:
-- i miei codici P2P (parzialmente oscurati)
+- i miei codici P2P (locale + remoto) parzialmente oscurati
 - stato di host e client
 - connessione alla swarm
 - pulsante per aprire il visualizzatore
