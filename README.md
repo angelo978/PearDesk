@@ -73,11 +73,19 @@ PearDesk è distribuito sotto **GPLv3 con restrizione aggiuntiva Non Commercial*
 Consulta il file `LICENSE` per i dettagli.
 
 ---
+## ⚠️ Stato del progetto
+
+PearDesk è un prototipo funzionante e stabile nelle sue funzioni principali
+(connessione P2P, streaming schermo, mouse, avvio automatico).
+
+Alcune funzionalità possono essere migliorate o estese da chi desidera
+contribuire, come:
+- ottimizzazioni della tastiera su alcuni sistemi
+- funzioni aggiuntive per l’invio/ricezione file
+- miglioramenti dell’interfaccia
 
 ## ⭐ Contribuire
-
-Pull request e suggerimenti sono benvenuti.  
-Il progetto è in sviluppo attivo.
+Il progetto è aperto a contributi della community.
 
 ---
 
