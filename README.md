@@ -1,8 +1,20 @@
+<table>
+<tr>
+<td width="180">
+  <img src="peardesk.png" width="180" alt="PearDesk Icon">
+</td>
+<td>
+  
 # PearDesk  
 Remote Desktop Peer‑to‑Peer, leggero, veloce e senza server.
 
 PearDesk è un sistema di desktop remoto completamente peer‑to‑peer, senza server centrali, senza cloud e senza dipendenze esterne.  
 Connessione diretta, crittografata, multipiattaforma e ultra‑leggera.
+
+</td>
+</tr>
+</table>
+
 
 ---
 
