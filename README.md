@@ -31,6 +31,30 @@ Connessione diretta, crittografata, multipiattaforma e ultra‑leggera.
 
 ---
 
+## 📸 Demo del funzionamento
+
+### 🔹 1. Pannello di controllo P2P
+Interfaccia locale che mostra:
+- il tuo codice P2P (parzialmente oscurato)
+- stato di host e client
+- connessione alla swarm
+- pulsante per aprire il visualizzatore
+
+![Pannello P2P](docs/1.jpg)
+
+---
+
+### 🔹 2. Desktop remoto visualizzato dal client
+Esempio reale di sessione remota con:
+- risoluzione adattata
+- FPS in tempo reale
+- controllo mouse e tastiera attivi
+
+![Desktop remoto](docs/2.jpg)
+
+
+---
+
 ## 📦 Struttura del progetto
 
 desktop-host/      → Cattura schermo, input remoto, streaming P2P
