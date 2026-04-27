@@ -103,10 +103,7 @@ Dopo l’installazione, riavvia PearDesk Host.
 
 ## 🔒 Sicurezza
 
-- Tutte le connessioni sono **crittografate end‑to‑end** tramite Noise Protocol.
-- Nessun server centrale.
-- Nessun inoltro cloud.
-- Nessun log.
+- Connessione P2P diretta tramite Hyperswarm (senza server intermedi).
 
 ---
 
