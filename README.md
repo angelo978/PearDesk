@@ -57,9 +57,15 @@ Esempio reale di sessione remota con:
 
 ## 📦 Struttura del progetto
 
-desktop-host/      → Cattura schermo, input remoto, streaming P2P
-desktop-client/    → Viewer web + input + connessione
-launcher/          → Script di avvio automatico (host/client)
+desktop-host/  
+→ Cattura schermo, input remoto, streaming P2P
+
+desktop-client/  
+→ Viewer web + input + connessione
+
+launcher/  
+→ Script di avvio automatico (host + client + browser)
+
 
 
 ---
