@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Desktop Remoto P2P - Client</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; padding: 0; height: 100%; background: #0b0d10; color: #e6edf3; font-family: ui-sans-serif, system-ui, sans-serif; }
+  #toolbar { display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: #11161c; border-bottom: 1px solid #1f262d; font-size: 13px; }
+  #status { padding: 2px 8px; border-radius: 999px; background: #2a1a1a; color: #ff7b7b; }
+  #status.ok { background: #14241a; color: #6ee7a8; }
+  #stage { position: relative; height: calc(100vh - 41px); display: grid; place-items: center; overflow: hidden; }
+  #screen { max-width: 100%; max-height: 100%; image-rendering: auto; cursor: crosshair; outline: none; user-select: none; -webkit-user-drag: none; }
+  .meta { color: #8b949e; }
+  button { background: #1f262d; color: #e6edf3; border: 1px solid #2a323a; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+  button:hover { background: #2a323a; }
+  kbd { background: #1f262d; padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <span id="status">disconnected</span>
+  <span class="meta" id="info">waiting for first frame…</span>
+  <span style="flex:1"></span>
+  <span class="meta">Mouse & tastiera attivi sempre</span>
+  <button id="fs">Fullscreen</button>
+</div>
+<div id="stage">
+  <!-- canvas al posto dell'immagine -->
+  <canvas id="screen" tabindex="0"></canvas>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   WEBSOCKET CONNECTION
+--------------------------------------------------------- */
+const wsProto = location.protocol === "https:" ? "wss" : "ws";
+const ws = new WebSocket(`${wsProto}://${location.host}`);
+ws.binaryType = "arraybuffer";
+
+const statusEl = document.getElementById("status");
+const infoEl = document.getElementById("info");
+const screenEl = document.getElementById("screen");
+const fsBtn = document.getElementById("fs");
+
+let frameCount = 0;
+let lastFpsTs = performance.now();
+let nativeWidth = 0;
+let nativeHeight = 0;
+
+const ctx = screenEl.getContext("2d");
+
+function setStatus(connected) {
+  statusEl.textContent = connected ? "host connected" : "disconnected";
+  statusEl.className = connected ? "ok" : "";
+}
+
+ws.addEventListener("close", () => setStatus(false));
+
+ws.addEventListener("message", (evt) => {
+  let msg;
+  try { msg = JSON.parse(evt.data); } catch { return; }
+
+  if (msg.type === "host-status") {
+    setStatus(!!msg.connected);
+  }
+
+  else if (msg.type === "frame") {
+    nativeWidth = msg.width || nativeWidth;
+    nativeHeight = msg.height || nativeHeight;
+
+    // msg.data è base64, msg.mime è il tipo
+    const img = new Image();
+    img.onload = () => {
+      // adatta il canvas alla dimensione del frame
+      screenEl.width = img.width;
+      screenEl.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsTs >= 1000) {
+        const fps = (frameCount * 1000 / (now - lastFpsTs)).toFixed(1);
+        infoEl.textContent = `${nativeWidth}×${nativeHeight} · ${fps} fps`;
+        frameCount = 0;
+        lastFpsTs = now;
+      }
+    };
+    img.src = `data:${msg.mime};base64,${msg.data}`;
+  }
+});
+
+/* ---------------------------------------------------------
+   SEND MESSAGE TO CLIENT NODE
+--------------------------------------------------------- */
+function send(msg) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(msg));
+  }
+}
+
+/* ---------------------------------------------------------
+   COORDINATE TRANSLATION
+--------------------------------------------------------- */
+function getRemoteCoords(evt) {
+  const r = screenEl.getBoundingClientRect();
+  const x = (evt.clientX - r.left) / r.width;
+  const y = (evt.clientY - r.top) / r.height;
+  return {
+    x: Math.max(0, Math.min(1, x)) * nativeWidth,
+    y: Math.max(0, Math.min(1, y)) * nativeHeight,
+  };
+}
+
+/* ---------------------------------------------------------
+   MOUSE EVENTS (sempre attivi)
+--------------------------------------------------------- */
+screenEl.addEventListener("mousemove", (evt) => {
+  const c = getRemoteCoords(evt);
+  send({ type: "mouse-move", x: c.x, y: c.y });
+});
+
+screenEl.addEventListener("mousedown", (evt) => {
+  evt.preventDefault();
+  const c = getRemoteCoords(evt);
+  send({ type: "mouse-down", x: c.x, y: c.y, button: evt.button });
+  // focus sul canvas quando clicchi
+  screenEl.focus();
+});
+
+screenEl.addEventListener("mouseup", (evt) => {
+  evt.preventDefault();
+  const c = getRemoteCoords(evt);
+  send({ type: "mouse-up", x: c.x, y: c.y, button: evt.button });
+});
+
+screenEl.addEventListener("contextmenu", (evt) => evt.preventDefault());
+
+screenEl.addEventListener("wheel", (evt) => {
+  evt.preventDefault();
+  send({ type: "scroll", dx: evt.deltaX, dy: evt.deltaY });
+}, { passive: false });
+
+/* ---------------------------------------------------------
+   KEYBOARD EVENTS (canvas + blocco browser)
+--------------------------------------------------------- */
+
+// blocca il browser dal mangiare Alt, AltGr, ecc.
+window.addEventListener("keydown", (evt) => {
+  evt.preventDefault();
+}, { capture: true });
+
+window.addEventListener("keyup", (evt) => {
+  evt.preventDefault();
+}, { capture: true });
+
+// eventi reali sul canvas
+screenEl.addEventListener("keydown", (evt) => {
+  evt.preventDefault();
+  console.log("keydown", evt.key, evt.code);
+  send({ type: "key-down", key: evt.key, code: evt.code });
+});
+
+screenEl.addEventListener("keyup", (evt) => {
+  evt.preventDefault();
+  console.log("keyup", evt.key, evt.code);
+  send({ type: "key-up", key: evt.key, code: evt.code });
+});
+
+// prova a bloccare i modificatori a livello API
+if (navigator.keyboard && navigator.keyboard.lock) {
+  navigator.keyboard.lock(["Alt", "AltGraph", "Shift", "Control"]).catch(() => {});
+}
+
+/* ---------------------------------------------------------
+   FULLSCREEN BUTTON
+--------------------------------------------------------- */
+fsBtn.addEventListener("click", () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+// focus iniziale sul canvas
+screenEl.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<title>Desktop Remoto P2P · Pannello</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0d10;
+    --panel: #11161c;
+    --panel2: #161c24;
+    --border: #1f262d;
+    --border-strong: #2a323a;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --primary: #34d399;
+    --accent: #22d3ee;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  body {
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(52,211,153,.08), transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(34,211,238,.08), transparent 50%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 60px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .logo {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: rgba(52,211,153,.12);
+    border: 1px solid rgba(52,211,153,.35);
+    display: grid; place-items: center;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 12px var(--primary); }
+  .kicker { font: 600 11px/1 ui-monospace, monospace; letter-spacing: .25em; color: var(--muted); text-transform: uppercase; }
+  h1 { margin: 2px 0 0; font-size: 18px; font-weight: 600; }
+  h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .row.wrap-row { flex-wrap: wrap; }
+  .grow { flex: 1 1 auto; min-width: 0; }
+  code, .code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13.5px;
+    word-break: break-all;
+  }
+  .topic-box {
+    background: #0a0f14;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--primary);
+    user-select: all;
+  }
+  input[type=text] {
+    width: 100%;
+    background: #0a0f14;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: ui-monospace, monospace;
+    font-size: 13.5px;
+    outline: none;
+  }
+  input[type=text]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52,211,153,.15); }
+  button {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background .15s, border-color .15s, transform .05s;
+    white-space: nowrap;
+  }
+  button:hover { background: #1c2229; border-color: #364049; }
+  button:active { transform: translateY(1px); }
+  button.primary {
+    background: var(--primary);
+    color: #04140d;
+    border-color: var(--primary);
+  }
+  button.primary:hover { background: #2bbd86; border-color: #2bbd86; }
+  button.ghost-danger { color: #ff8b8b; border-color: rgba(239,68,68,.4); }
+  button.ghost-danger:hover { background: rgba(239,68,68,.08); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font: 600 11px/1 ui-monospace, monospace;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 5px 9px; border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--panel);
+    color: var(--muted);
+  }
+  .pill .led { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .pill.ok { color: var(--primary); border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.08); }
+  .pill.ok .led { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+  .pill.warn { color: var(--warn); border-color: rgba(245,158,11,.4); background: rgba(245,158,11,.08); }
+  .pill.warn .led { background: var(--warn); }
+  .pill.err { color: #ff8b8b; border-color: rgba(239,68,68,.4); background: rgba(239,68,68,.08); }
+  .pill.err .led { background: var(--danger); }
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: #0d1318; border: 1px solid var(--border-strong);
+    padding: 10px 16px; border-radius: 10px;
+    font-size: 13px; color: var(--text);
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+    opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -6px); }
+  .log {
+    background: #0a0f14;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .small { font-size: 12px; color: var(--muted); }
+  .open-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .open-link:hover { text-decoration: underline; }
+  .grid-status { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) {
+    .grid-status { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><div class="dot"></div></div>
+    <div>
+      <div class="kicker">desktop-remoto</div>
+      <h1>Pannello di controllo P2P</h1>
+    </div>
+    <div style="margin-left:auto" class="row wrap-row">
+      <span id="hostPill" class="pill"><span class="led"></span><span>host</span></span>
+      <span id="clientPill" class="pill"><span class="led"></span><span>client</span></span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Il tuo codice</h2>
+    <div class="sub">Condividilo con chi deve controllare questo computer.</div>
+    <div class="row wrap-row" style="gap:10px">
+      <div class="topic-box code grow" id="myTopic">…</div>
+      <button id="btnCopy">Copia</button>
+      <button id="btnRegen" title="Genera un nuovo codice">Rigenera</button>
+    </div>
+    <div class="log" id="hostLog" style="margin-top:12px">in attesa…</div>
+  </section>
+
+  <section class="card">
+    <h2>Connettiti a un host remoto</h2>
+    <div class="sub">Incolla qui il codice ricevuto dall'altra macchina.</div>
+    <div class="row wrap-row" style="gap:10px">
+      <div class="grow"><input id="remoteTopic" type="text" placeholder="64 caratteri esadecimali" autocomplete="off" spellcheck="false" /></div>
+      <button id="btnConnect" class="primary">Connetti</button>
+      <button id="btnDisconnect" class="ghost-danger">Disconnetti</button>
+    </div>
+    <div class="row wrap-row" style="margin-top:12px; gap:10px; justify-content:space-between">
+      <div class="log grow" id="clientLog">nessun client attivo</div>
+      <a id="openClient" class="open-link" href="#" target="_blank" rel="noopener" style="display:none">Apri visualizzatore →</a>
+    </div>
+  </section>
+
+  <p class="small" style="margin-top:18px">
+    Trasporto P2P via Hyperswarm · Hypercore · Holepunch DHT — nessun server intermedio.
+    Pannello servito localmente da <span class="code">localhost</span>.
+  </p>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function toast(msg) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(window.__t);
+  window.__t = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+function setPill(el, status, label) {
+  const cls = { running: "ok", crashed: "err", "no-topic": "warn", stopped: "", stopping: "warn", "missing-script": "err" }[status] || "";
+  el.className = "pill " + cls;
+  el.querySelector("span:last-child").textContent = label + ": " + status;
+}
+
+async function fetchStatus() {
+  try {
+    const res = await fetch("/api/status");
+    const data = await res.json();
+    $("myTopic").textContent = data.myTopic;
+    if (!document.activeElement || document.activeElement.id !== "remoteTopic") {
+      if (data.remoteTopic && !$("remoteTopic").value) $("remoteTopic").value = data.remoteTopic;
+    }
+    setPill($("hostPill"), data.hostStatus, "host");
+    setPill($("clientPill"), data.clientStatus, "client");
+    $("hostLog").textContent = data.lastHostLog || "in attesa…";
+    $("clientLog").textContent = data.lastClientLog || "nessun client attivo";
+    const link = $("openClient");
+    if (data.clientStatus === "running") {
+      link.href = "http://localhost:" + data.clientPort;
+      link.style.display = "inline";
+    } else {
+      link.style.display = "none";
+    }
+  } catch (err) {
+    console.warn("status error", err);
+  }
+}
+
+$("btnCopy").addEventListener("click", async () => {
+  const t = $("myTopic").textContent.trim();
+  try {
+    await navigator.clipboard.writeText(t);
+    toast("Codice copiato negli appunti");
+  } catch {
+    toast("Copia non riuscita");
+  }
+});
+
+$("btnRegen").addEventListener("click", async () => {
+  if (!confirm("Generare un nuovo codice? La connessione corrente verrà persa.")) return;
+  const res = await fetch("/api/regenerate-topic", { method: "POST" });
+  const data = await res.json();
+  $("myTopic").textContent = data.myTopic;
+  toast("Nuovo codice generato");
+  fetchStatus();
+});
+
+$("btnConnect").addEventListener("click", async () => {
+  const topic = $("remoteTopic").value.trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(topic)) {
+    toast("Codice non valido — servono 64 caratteri esadecimali");
+    return;
+  }
+  $("btnConnect").disabled = true;
+  try {
+    const res = await fetch("/api/connect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "errore");
+    toast("Client riavviato sul nuovo topic");
+    setTimeout(() => {
+      window.open(data.clientUrl, "_blank", "noopener");
+    }, 600);
+  } catch (err) {
+    toast("Errore: " + err.message);
+  } finally {
+    $("btnConnect").disabled = false;
+    fetchStatus();
+  }
+});
+
+$("btnDisconnect").addEventListener("click", async () => {
+  await fetch("/api/disconnect", { method: "POST" });
+  $("remoteTopic").value = "";
+  toast("Client fermato");
+  fetchStatus();
+});
+
+fetchStatus();
+setInterval(fetchStatus, 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "desktop-remoto-launcher",
+  "version": "1.0.0",
+  "description": "Local launcher + control panel for Desktop Remoto P2P",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "desktop-remoto": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "install:linux": "bash scripts/install-linux.sh",
+    "install:windows": "powershell -ExecutionPolicy Bypass -File scripts/install-windows.ps1"
+  },
+  "dependencies": {}
+}

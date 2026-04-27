@@ -1,0 +1,21 @@
+{
+  "name": "desktop-host",
+  "version": "1.0.0",
+  "description": "P2P remote desktop host (screen sharer) using Hyperswarm",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "desktop-host": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.0.0",
+    "@nut-tree-fork/nut-js": "^4.2.6",
+    "b4a": "^1.6.6",
+    "hyperswarm": "^4.8.4",
+    "screenshot-desktop": "^1.15.0",
+    "sharp": "^0.33.5"
+  }
+}
