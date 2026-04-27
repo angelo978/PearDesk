@@ -23,7 +23,6 @@ Connessione diretta, crittografata, multipiattaforma e ultra‑leggera.
 - 🔗 **Connessione P2P pura** (Holepunch / Hyperswarm)
 - 🖥️ **Controllo remoto completo** (mouse + tastiera)
 - ⚡ **Streaming schermo ad alta efficienza** (JPEG/WebP)
-- 🔐 **Crittografia end‑to‑end** (Noise Protocol)
 - 🌍 **NAT traversal automatico**
 - 🧩 **Multipiattaforma** Linux, Windows. (macOS non ancora supportato)
 - 🪶 **Zero server, zero cloud, zero dipendenze esterne**
