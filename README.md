@@ -13,7 +13,7 @@ Connessione diretta, crittografata, multipiattaforma e ultra‑leggera.
 - ⚡ **Streaming schermo ad alta efficienza** (JPEG/WebP)
 - 🔐 **Crittografia end‑to‑end** (Noise Protocol)
 - 🌍 **NAT traversal automatico**
-- 🧩 **Multipiattaforma** (Linux, Windows, macOS)
+- 🧩 **Multipiattaforma** Linux, Windows. (macOS non ancora supportato)
 - 🪶 **Zero server, zero cloud, zero dipendenze esterne**
 - 🛠️ **Launcher automatico** (host + client + browser)
 
